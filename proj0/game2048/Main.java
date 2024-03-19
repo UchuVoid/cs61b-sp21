@@ -17,6 +17,7 @@ public class Main {
     /** The main program.  ARGS may contain the options --seed=NUM,
      *  (random seed); --log (record moves and random tiles
      *  selected.). */
+
     public static void main(String... args) {
         CommandArgs options =
             new CommandArgs("--seed=(\\d+) --log=(.+)",
