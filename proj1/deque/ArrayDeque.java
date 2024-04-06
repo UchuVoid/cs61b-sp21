@@ -39,6 +39,18 @@ public class ArrayDeque<T> {
         return temp;
     }
 
+    private T[] copyArr(T[] temp){
+        for (int i = 0; i < front; i++) {
+            temp[i] = arr[i];
+        }
+        for (int i = 0; i < arr.length - end - 1; i++) {
+            temp[temp.length - 1 - i] = arr[arr.length - 1 - i];
+        }
+        end = temp.length - (arr.length - end);
+        arr = temp;
+        return temp;
+    }
+
     public ArrayDeque() {
 
     }
@@ -60,13 +72,7 @@ public class ArrayDeque<T> {
         size++;
         if (size == arr.length) {
             T[] temp = reSize(arr.length * 2);
-            for (int i = 0; i < front; i++) {
-                temp[i] = arr[i];
-            }
-            for (int i = 0; i < end; i++) {
-                temp[temp.length - 1 - i] = arr[arr.length - 1 - i];
-            }
-            arr = temp;
+            temp=copyArr(temp);
         }
         arr[front] = item;
         front = addOne(front);
@@ -79,14 +85,7 @@ public class ArrayDeque<T> {
         size++;
         if (size == arr.length) {
             T[] temp = reSize(arr.length * 2);
-            for (int i = 0; i < front; i++) {
-                temp[i] = arr[i];
-            }
-            for (int i = 0; i < arr.length - end - 1; i++) {
-                temp[temp.length - 1 - i] = arr[arr.length - 1 - i];
-            }
-            end = temp.length - (arr.length - end);
-            arr = temp;
+            temp=copyArr(temp);
         }
         arr[end] = item;
         end = minusOne(end);
@@ -97,8 +96,13 @@ public class ArrayDeque<T> {
             front = minusOne(front);
             T temp = arr[front];
             size--;
+            if(size>4&&size<arr.length/4){
+                T[] t = reSize(arr.length/4);
+                arr=copyArr(t);
+            }
             return temp;
         }
+
         return null;
     }
 
