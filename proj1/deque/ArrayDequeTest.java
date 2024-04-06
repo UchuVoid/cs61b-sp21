@@ -1,19 +1,11 @@
 package deque;
 
-import org.checkerframework.checker.units.qual.A;
+import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-
-import jh61b.junit.In;
-import org.junit.Test;
-
-import java.util.ArrayList;
 import java.util.Random;
 
 import static org.junit.Assert.*;
-
 public class ArrayDequeTest {
     @Test
     /** Adds a few things to the list, checking isEmpty() and size() are correct,
