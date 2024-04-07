@@ -1,6 +1,6 @@
 package deque;
 
-public class LinkedListDeque<T> {
+public class LinkedListDeque<T> implements Deque<T> {
     static private class TNode<T> {
         private T item;
         private TNode prev;
@@ -49,7 +49,7 @@ public class LinkedListDeque<T> {
         TNode<T> current = sentinel.next;
         while (current != sentinel) {
             System.out.print(current.item + " ");
-            current=current.next;
+            current = current.next;
         }
         System.out.println("");
     }
@@ -89,19 +89,20 @@ public class LinkedListDeque<T> {
     }
 
     public LinkedListDeque(LinkedListDeque other) {
-        sentinel=new TNode<T>(null,null,null);
+        sentinel = new TNode<T>(null, null, null);
         sentinel.prev = sentinel;
         sentinel.next = sentinel;
-        size=0;
-        for(int i=0;i<other.size;i++){
-            addLast((T)other.get(i));
+        size = 0;
+        for (int i = 0; i < other.size; i++) {
+            addLast((T) other.get(i));
         }
     }
-    public T getRecursize(int index,TNode<T> temp){
-        if(index==0){
+
+    public T getRecursize(int index, TNode<T> temp) {
+        if (index == 0) {
             return temp.item;
         }
-        getRecursize(index-1,temp.next);
+        getRecursize(index - 1, temp.next);
         return null;
     }
 }

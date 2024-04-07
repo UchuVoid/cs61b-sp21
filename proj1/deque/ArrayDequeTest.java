@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.Random;
 
 import static org.junit.Assert.*;
+
 public class ArrayDequeTest {
     @Test
     /** Adds a few things to the list, checking isEmpty() and size() are correct,
@@ -143,11 +144,11 @@ public class ArrayDequeTest {
 
         ArrayDeque<Integer> lld1 = new ArrayDeque<>();
 
-        for (int i = 0; i <90; i++) {
+        for (int i = 0; i < 90; i++) {
             lld1.addFirst(i);
         }
-        for(int i=0;i<10;i++){
-            lld1.addLast(101+i);
+        for (int i = 0; i < 10; i++) {
+            lld1.addLast(101 + i);
         }
         for (int i = 0; i < 90; i++) {
             lld1.removeFirst();

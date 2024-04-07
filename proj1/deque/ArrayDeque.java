@@ -1,6 +1,6 @@
 package deque;
 
-public class ArrayDeque<T> {
+public class ArrayDeque<T> implements Deque<T> {
 
     private int size = 0;
     private T[] arr = (T[]) new Object[8];
@@ -36,7 +36,7 @@ public class ArrayDeque<T> {
         return temp;
     }
 
-    private T[] copyArr(T[] temp){
+    private T[] copyArr(T[] temp) {
         for (int i = 0; i < front; i++) {
             temp[i] = arr[i];
         }
@@ -69,7 +69,7 @@ public class ArrayDeque<T> {
         size++;
         if (size == arr.length) {
             T[] temp = reSize(arr.length * 2);
-            temp=copyArr(temp);
+            temp = copyArr(temp);
         }
         arr[front] = item;
         front = addOne(front);
@@ -82,7 +82,7 @@ public class ArrayDeque<T> {
         size++;
         if (size == arr.length) {
             T[] temp = reSize(arr.length * 2);
-            temp=copyArr(temp);
+            temp = copyArr(temp);
         }
         arr[end] = item;
         end = minusOne(end);
@@ -93,13 +93,12 @@ public class ArrayDeque<T> {
             front = minusOne(front);
             T temp = arr[front];
             size--;
-            if(size>4&&size<arr.length/4){
-                T[] t = reSize(arr.length/4);
-                arr=copyArr(t);
+            if (size > 4 && size < arr.length / 4) {
+                T[] t = reSize(arr.length / 4);
+                arr = copyArr(t);
             }
             return temp;
         }
-
         return null;
     }
 
@@ -109,7 +108,6 @@ public class ArrayDeque<T> {
             T temp = arr[end];
             size--;
             return temp;
-
         }
         return null;
     }
@@ -119,8 +117,8 @@ public class ArrayDeque<T> {
     }
 
     public void printDeque() {
-        for(int i=0;i<size;i++){
-            System.out.print(get(i)+" ");
+        for (int i = 0; i < size; i++) {
+            System.out.print(get(i) + " ");
         }
         System.out.println("");
     }
@@ -128,11 +126,12 @@ public class ArrayDeque<T> {
     public boolean isEmpty() {
         return size == 0 ? true : false;
     }
-    public ArrayDeque(ArrayDeque other){
-        front=0;
-        end=0;
-        for(int i=0;i<other.size;i++){
-            addLast((T)other.get(i));
+
+    public ArrayDeque(ArrayDeque other) {
+        front = 0;
+        end = 0;
+        for (int i = 0; i < other.size; i++) {
+            addLast((T) other.get(i));
         }
     }
 
