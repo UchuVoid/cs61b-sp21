@@ -3,6 +3,7 @@ package deque;
 import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
 
+import java.util.Iterator;
 import java.util.Random;
 
 import static org.junit.Assert.*;
@@ -153,9 +154,14 @@ public class ArrayDequeTest {
         for (int i = 0; i < 90; i++) {
             lld1.removeFirst();
         }
+       Iterator<Integer> iterator=  lld1.iterator();
+        while (iterator.hasNext()){
+            System.out.println(iterator.next());
+        }
         ArrayDeque<Integer> lld2 = new ArrayDeque<>(lld1);
+         iterator=  lld2.iterator();
         for (int i = 0; i < 10; i++) {
-            assertEquals(lld1.get(i), lld2.get(i));
+            assertEquals(lld1.get(i), iterator.next());
         }
 
     }
@@ -178,7 +184,6 @@ public class ArrayDequeTest {
                     lld1.removeFirst();
                     break;
                 case 4:
-
 
                 case 5:
                     lld1.removeLast();

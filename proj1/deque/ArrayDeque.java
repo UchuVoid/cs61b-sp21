@@ -1,7 +1,8 @@
 package deque;
 
-public class ArrayDeque<T> implements Deque<T> {
+import java.util.Iterator; // 引入 Iterator 类
 
+public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private int size = 0;
     private T[] arr = (T[]) new Object[8];
     private int front = 0;
@@ -140,5 +141,53 @@ public class ArrayDeque<T> implements Deque<T> {
             addLast((T) other.get(i));
         }
     }
+
+
+    public Iterator<T> iterator() {
+        return new ArrayDequeIterator();
+    }
+
+    // 内部迭代器类
+    private class ArrayDequeIterator implements Iterator<T> {
+        private int index = 0;
+        private int iteratorSize = size;
+
+        @Override
+        public boolean hasNext() {
+            return (iteratorSize - index) != 0;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                return null;
+            }
+            T item = get(index);
+            index++;
+
+            return item;
+        }
+
+    }
+
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof Deque)) {
+            return false;
+        }
+        Deque<T> eo = (Deque<T>) o;
+        if (eo.size() != size()) {
+            return false;
+        }
+        for (int i = 0; i < size(); i++) {
+            if (get(i).equals(eo.get(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 }

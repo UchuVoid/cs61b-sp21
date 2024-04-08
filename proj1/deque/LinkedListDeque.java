@@ -1,5 +1,7 @@
 package deque;
 
+import java.util.Iterator;
+
 public class LinkedListDeque<T> implements Deque<T> {
     public static class TNode<T> {
         private T item;
@@ -108,4 +110,52 @@ public class LinkedListDeque<T> implements Deque<T> {
         getRecursize(index - 1, temp.next);
         return null;
     }
+
+
+    public Iterator<T> iterator() {
+        return new LinkedListDequeIterator();
+    }
+
+    // 内部迭代器类
+    private class LinkedListDequeIterator implements Iterator<T> {
+        private int index = 0;
+        private int iteratorSize = size;
+
+        @Override
+        public boolean hasNext() {
+            return (iteratorSize - index) != 0;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                return null;
+            }
+            T item = get(index);
+            index++;
+
+            return item;
+        }
+
+    }
+
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof Deque)) {
+            return false;
+        }
+        Deque<T> eo = (Deque<T>) o;
+        if (eo.size() != size()) {
+            return false;
+        }
+        for (int i = 0; i < size(); i++) {
+            if (get(i).equals(eo.get(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
