@@ -8,6 +8,15 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private int front = 0;
     private int end = 0;
 
+    public ArrayDeque() {
+
+    }
+
+    public ArrayDeque(T item) {
+        addFirst(item);
+        size = 1;
+    }
+
     private int minusOne(int index) {
         index--;
         while (index < 0) {
@@ -48,15 +57,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return temp;
     }
 
-    public ArrayDeque() {
-
-    }
-
-    public ArrayDeque(T item) {
-        arr[front] = item;
-        front = minusOne(front);
-        size++;
-    }
 
     @Override
     public int size() {

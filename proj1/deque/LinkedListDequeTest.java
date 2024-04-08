@@ -160,7 +160,7 @@ public class LinkedListDequeTest {
         LinkedListDeque<Integer> lld2 = new LinkedListDeque<>(lld1);
         Iterator<Integer> iterator = lld2.iterator();
         for (int i = 0; i < 1000; i++) {
-            System.out.println(lld1.get(i) + " " + lld2.get(i));
+            System.out.println(lld1.get(i) + " " + lld2.getRecursize(i));
             assertEquals(lld1.get(i), iterator.next());
         }
     }
