@@ -8,10 +8,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private int front = 0;
     private int end = 0;
 
-    public T[] getArr() {
-        return arr;
-    }
-
     private int minusOne(int index) {
         index--;
         while (index < 0) {
