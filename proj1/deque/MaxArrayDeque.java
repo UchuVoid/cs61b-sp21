@@ -10,6 +10,10 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
         this.comparator = c;
     }
 
+    public MaxArrayDeque() {
+        super();
+    }
+
 
     //怎么访问父类的数组
     public T max() {
