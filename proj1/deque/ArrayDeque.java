@@ -7,6 +7,10 @@ public class ArrayDeque<T> implements Deque<T> {
     private int front = 0;
     private int end = 0;
 
+    public T[] getArr() {
+        return arr;
+    }
+
     private int minusOne(int index) {
         index--;
         while (index < 0) {
@@ -32,14 +36,11 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     private T[] reSize(int num) {
-        T[] temp = (T[]) new Object[num];
-        return temp;
+        return (T[]) new Object[num];
     }
 
     private T[] copyArr(T[] temp) {
-        for (int i = 0; i < front; i++) {
-            temp[i] = arr[i];
-        }
+        if (front >= 0) System.arraycopy(arr, 0, temp, 0, front);
         for (int i = 0; i < arr.length - end - 1; i++) {
             temp[temp.length - 1 - i] = arr[arr.length - 1 - i];
         }
@@ -58,10 +59,12 @@ public class ArrayDeque<T> implements Deque<T> {
         size++;
     }
 
+    @Override
     public int size() {
         return size;
     }
 
+    @Override
     public void addFirst(T item) {
         if (size == 0) {
             end = minusOne(end);
@@ -69,12 +72,13 @@ public class ArrayDeque<T> implements Deque<T> {
         size++;
         if (size == arr.length) {
             T[] temp = reSize(arr.length * 2);
-            temp = copyArr(temp);
+            copyArr(temp);
         }
         arr[front] = item;
         front = addOne(front);
     }
 
+    @Override
     public void addLast(T item) {
         if (size == 0) {
             front = addOne(front);
@@ -82,12 +86,13 @@ public class ArrayDeque<T> implements Deque<T> {
         size++;
         if (size == arr.length) {
             T[] temp = reSize(arr.length * 2);
-            temp = copyArr(temp);
+            copyArr(temp);
         }
         arr[end] = item;
         end = minusOne(end);
     }
 
+    @Override
     public T removeFirst() {
         if (size != 0) {
             front = minusOne(front);
@@ -102,6 +107,7 @@ public class ArrayDeque<T> implements Deque<T> {
         return null;
     }
 
+    @Override
     public T removeLast() {
         if (size != 0) {
             end = addOne(end);
@@ -112,19 +118,17 @@ public class ArrayDeque<T> implements Deque<T> {
         return null;
     }
 
+    @Override
     public T get(int index) {
         return arr[minusOne(front - index)];
     }
 
+    @Override
     public void printDeque() {
         for (int i = 0; i < size; i++) {
             System.out.print(get(i) + " ");
         }
-        System.out.println("");
-    }
-
-    public boolean isEmpty() {
-        return size == 0 ? true : false;
+        System.out.println();
     }
 
     public ArrayDeque(ArrayDeque other) {
