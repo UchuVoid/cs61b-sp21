@@ -1,5 +1,6 @@
 package deque;
 
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdRandom;
 import org.junit.Test;
 
@@ -200,5 +201,19 @@ public class LinkedListDequeTest {
                 linkedListDeque.get(randIndex);
             }
         }
+    }
+    @Test
+    public void atTest(){
+        LinkedListDeque<Integer> lld1=new LinkedListDeque<>();
+        lld1.size();
+        lld1.isEmpty();
+        lld1.addFirst(2);
+        lld1.removeLast()    ;
+        assertEquals(null,lld1.removeFirst());
+        lld1.addFirst(4);
+        lld1.addFirst(5);
+        lld1.isEmpty();
+      assertEquals(4,(int )lld1.removeLast());
+
     }
 }
