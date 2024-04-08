@@ -1,7 +1,7 @@
 package deque;
 
 public class LinkedListDeque<T> implements Deque<T> {
-    static private class TNode<T> {
+    public static class TNode<T> {
         private T item;
         private TNode prev;
         private TNode next;

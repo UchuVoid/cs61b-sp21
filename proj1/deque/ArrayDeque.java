@@ -40,7 +40,9 @@ public class ArrayDeque<T> implements Deque<T> {
     }
 
     private T[] copyArr(T[] temp) {
-        if (front >= 0) System.arraycopy(arr, 0, temp, 0, front);
+        if (front >= 0) {
+            System.arraycopy(arr, 0, temp, 0, front);
+        }
         for (int i = 0; i < arr.length - end - 1; i++) {
             temp[temp.length - 1 - i] = arr[arr.length - 1 - i];
         }
