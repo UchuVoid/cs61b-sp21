@@ -40,4 +40,5 @@ public class MaxArrayDequeTest {
         Comparator<String> comparator = Comparator.naturalOrder();
         assertEquals("fb", (String) lld2.max(comparator));
     }
+
 }

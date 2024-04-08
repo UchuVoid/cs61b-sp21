@@ -1,6 +1,10 @@
 package deque;
 
+import org.junit.Test;
+
 import java.util.Comparator;
+
+import static org.junit.Assert.assertEquals;
 
 public class MaxArrayDeque<T> extends ArrayDeque<T> {
     private Comparator<T> comparator;
@@ -41,4 +45,5 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
         }
         return null;
     }
+
 }

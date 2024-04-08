@@ -154,12 +154,12 @@ public class ArrayDequeTest {
         for (int i = 0; i < 90; i++) {
             lld1.removeFirst();
         }
-       Iterator<Integer> iterator=  lld1.iterator();
-        while (iterator.hasNext()){
+        Iterator<Integer> iterator = lld1.iterator();
+        while (iterator.hasNext()) {
             System.out.println(iterator.next());
         }
         ArrayDeque<Integer> lld2 = new ArrayDeque<>(lld1);
-         iterator=  lld2.iterator();
+        iterator = lld2.iterator();
         for (int i = 0; i < 10; i++) {
             assertEquals(lld1.get(i), iterator.next());
         }
@@ -195,4 +195,17 @@ public class ArrayDequeTest {
         }
     }
 
+    @Test
+    public void atTest() {
+        ArrayDeque<Integer> lld1 = new ArrayDeque<>();
+        lld1.addFirst(0);
+        lld1.removeLast();
+        lld1.addFirst(2);
+        lld1.isEmpty();
+        lld1.removeFirst();
+        lld1.isEmpty();
+        lld1.addLast(7);
+        assertEquals(7, (int) lld1.removeFirst());
+
+    }
 }
