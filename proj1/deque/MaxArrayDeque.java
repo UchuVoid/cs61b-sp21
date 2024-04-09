@@ -1,22 +1,15 @@
 package deque;
 
-import org.junit.Test;
-
 import java.util.Comparator;
-
-import static org.junit.Assert.assertEquals;
 
 public class MaxArrayDeque<T> extends ArrayDeque<T> {
     private Comparator<T> comparator;
 
     public MaxArrayDeque(Comparator<T> c) {
-        super();
         this.comparator = c;
     }
 
-    public MaxArrayDeque() {
-        super();
-    }
+    public MaxArrayDeque() {}
 
 
     //怎么访问父类的数组

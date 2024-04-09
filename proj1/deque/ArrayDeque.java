@@ -8,13 +8,12 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
     private int front = 0;
     private int end = 0;
 
-    public ArrayDeque() {
-
-    }
-
     public ArrayDeque(T item) {
         addFirst(item);
         size = 1;
+    }
+
+    public ArrayDeque() {
     }
 
     private int minusOne(int index) {
@@ -33,13 +32,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         return index;
     }
 
-    private int addOne(int index, int length) {
-        index++;
-        while (index >= length) {
-            index -= length;
-        }
-        return index;
-    }
 
     private T[] reSize(int num) {
         return (T[]) new Object[num];
@@ -121,7 +113,11 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public T get(int index) {
-        return arr[minusOne(front - index)];
+        if (index < size) {
+            return arr[minusOne(front - index)];
+        } else {
+            return null;
+        }
     }
 
     @Override
