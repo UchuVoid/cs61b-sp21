@@ -96,15 +96,6 @@ public class LinkedListDeque<T> implements Deque<T>, Iterable<T> {
         return null;
     }
 
-    public LinkedListDeque(LinkedListDeque other) {
-        sentinel = new TNode<T>(null, null, null);
-        sentinel.prev = sentinel;
-        sentinel.next = sentinel;
-        size = 0;
-        for (int i = 0; i < other.size; i++) {
-            addLast((T) other.get(i));
-        }
-    }
 
     public T getRecursive(int index) {
         if (index < 0 || index > size - 1) {
