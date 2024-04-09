@@ -3,17 +3,16 @@ package deque;
 import java.util.Iterator; // 引入 Iterator 类
 
 public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
-    private int size = 0;
-    private T[] arr = (T[]) new Object[8];
-    private int front = 0;
-    private int end = 0;
-
-    public ArrayDeque(T item) {
-        addFirst(item);
-        size = 1;
-    }
+    private int size;
+    private T[] arr;
+    private int front;
+    private int end;
 
     public ArrayDeque() {
+        arr = (T[]) new Object[8];
+        size = 0;
+        end = 0;
+        front = 0;
     }
 
     private int minusOne(int index) {
@@ -128,15 +127,6 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
         System.out.println();
     }
 
-    public ArrayDeque(ArrayDeque other) {
-        front = 0;
-        end = 0;
-        for (int i = 0; i < other.size; i++) {
-            addLast((T) other.get(i));
-        }
-    }
-
-
     public Iterator<T> iterator() {
         return new ArrayDequeIterator();
     }
@@ -166,25 +156,27 @@ public class ArrayDeque<T> implements Deque<T>, Iterable<T> {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
         if (o == null) {
             return false;
         }
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof ArrayDeque)) {
+
+        if (!(o instanceof Deque)) {
             return false;
         }
-        ArrayDeque<?> ad = (ArrayDeque<?>) o;
-        if (ad.size() != size) {
+        Deque<T> other = (Deque<T>) o;
+        if (size() != other.size()) {
             return false;
         }
-        for (int i = 0; i < size; i++) {
-            if (ad.get(i) != get(i)) {
+        for (int i = 0; i < size(); i++) {
+            T item1 = get(i);
+            T item2 = other.get(i);
+            if (!item1.equals(item2)) {
                 return false;
             }
         }
         return true;
     }
-
 }
