@@ -9,7 +9,7 @@ public class MaxArrayDeque<T> extends ArrayDeque<T> {
     public MaxArrayDeque(Comparator<T> c) {
         this.c = c;
     }
-    
+
     public T max() {
         return max(c);
     }
