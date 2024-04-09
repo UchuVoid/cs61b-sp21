@@ -29,7 +29,8 @@ public class MaxArrayDequeTest {
 
     @Test
     public void testParametriMax() {
-        MaxArrayDeque<String> lld2 = new MaxArrayDeque<>();
+        Comparator<String> comparator = Comparator.naturalOrder();
+        MaxArrayDeque<String> lld2 = new MaxArrayDeque<>(comparator);
         lld2.addFirst("aa");
         lld2.addFirst("b");
         lld2.addFirst("caa");
@@ -37,7 +38,7 @@ public class MaxArrayDequeTest {
         lld2.addFirst("dasd");
         lld2.addFirst("f");
         lld2.addFirst("fb");
-        Comparator<String> comparator = Comparator.naturalOrder();
+
         assertEquals("fb", (String) lld2.max(comparator));
     }
 
