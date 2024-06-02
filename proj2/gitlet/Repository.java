@@ -70,6 +70,12 @@ public class Repository {
         /** Creat the first Commit*/
         Commit firstCommit = new Commit("initial commit", null, new TreeMap<>(), new Date(0));
         firstCommit.saveCommit();
+
+        /**
+         * 初始化缓存区
+         */
+        StageArea stageArea = new StageArea(STAGE_FILE);
+        stageArea.saveStage();
         /** 同步将各种分支指向的commit */
         updatePointerTo(HEAD, firstCommit);
         updatePointerTo(MASTER, firstCommit);
@@ -302,7 +308,9 @@ public class Repository {
         //打印删除文件的信息
         message("=== Removed Files ===");
         List<String> rmName = stage.getRmName();
-        printStatus(rmName);
+        if (rmName != null) {
+            printStatus(rmName);
+        }
         //打印任何工作区中与commit或stageArea中不同的情况
         message("=== Modifications Not Staged For Commit ===");
         message("");
