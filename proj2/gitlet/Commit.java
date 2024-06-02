@@ -4,11 +4,11 @@ package gitlet;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static gitlet.Utils.*;
 import static gitlet.Utils.readObject;
-import static java.lang.String.format;
 
 /**
  * Represents a gitlet commit object.
@@ -189,6 +189,7 @@ public class Commit implements Serializable {
      * 打印commit的log信息
      */
     public void printCommitInfo() {
+        SimpleDateFormat format = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z");
         message("===");
         message("commit %s", id);
         if (parents != null && parents.size() == 2) {
@@ -199,7 +200,7 @@ public class Commit implements Serializable {
                     parent1.getId().substring(0, 7),
                     parent2.getId().substring(0, 7));
         }
-        message("Date: " + format(getTimestamp()));
+        message("Date: " + format.format(timestamp));
         message(this.message + "\n");
     }
 
