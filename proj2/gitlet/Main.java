@@ -16,7 +16,7 @@ public class Main {
      * Usage: java gitlet.Main ARGS, where ARGS contains
      * <COMMAND> <OPERAND1> <OPERAND2> ...
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args)  {
         /** 当没有输入指令时，报错 */
         if (args.length == 0) {
             message("please enter a command");
@@ -26,7 +26,11 @@ public class Main {
         switch (firstArg) {
             /** java gitlet.Main init */
             case "init":
-                init();
+                try {
+                    init();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             /** java gitlet.Main add ... */
             case "add":
@@ -52,7 +56,11 @@ public class Main {
                     System.exit(0);
                 }
                 String rmFile = args[1];
-                rm(rmFile);
+                try {
+                    rm(rmFile);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             //java gitlet.Main log
             case "log":
@@ -93,14 +101,22 @@ public class Main {
             case "checkout":
                 if (args.length == 2) {
                     String checkoutBranch = args[1];
-                    checkoutBranch(checkoutBranch);
+                    try {
+                        checkoutBranch(checkoutBranch);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 } else if (args.length == 3) {
                     String checkoutFile = args[2];
                     if (!args[1].equals("--")) {
                         message("Incorrect operands.");
                         System.exit(0);
                     }
-                    checkoutHeadBlob(checkoutFile);
+                    try {
+                        checkoutHeadBlob(checkoutFile);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 } else if (args.length == 4) {
                     String checkoutCommit = args[1];
                     String checkoutFile = args[3];
@@ -108,7 +124,11 @@ public class Main {
                         message("Incorrect operands.");
                         System.exit(0);
                     }
-                    checkoutCommitBlob(checkoutCommit, checkoutFile);
+                    try {
+                        checkoutCommitBlob(checkoutCommit, checkoutFile);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 } else {
                     message("Incorrect operands.");
                 }
@@ -119,7 +139,11 @@ public class Main {
                     System.exit(0);
                 }
                 String newBranchName = args[1];
-                creatBranch(newBranchName);
+                try {
+                    creatBranch(newBranchName);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "rm-branch":
                 if (args.length != 2) {
@@ -127,7 +151,11 @@ public class Main {
                     System.exit(0);
                 }
                 String rmBranchName = args[1];
-                rmBranch(rmBranchName);
+                try {
+                    rmBranch(rmBranchName);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "reset":
                 if (args.length != 2) {
@@ -142,7 +170,11 @@ public class Main {
                     System.exit(0);
                 }
                 String mergeBranch = args[1];
-                merge(mergeBranch);
+                try {
+                    merge(mergeBranch);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             default:
                 message("Incorrect operands");
