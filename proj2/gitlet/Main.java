@@ -16,7 +16,10 @@ public class Main {
      * Usage: java gitlet.Main ARGS, where ARGS contains
      * <COMMAND> <OPERAND1> <OPERAND2> ...
      */
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
+
+//        args = new String[]{"merge","master"};
+//        args = new String[]{"checkout","bugFix"};
         /** 当没有输入指令时，报错 */
         if (args.length == 0) {
             message("please enter a command");

@@ -154,7 +154,7 @@ public class Repository {
         newBlob.saveBlob();
 
         /** 初始化暂存区 */
-        StageArea addArea = new StageArea(STAGE_FILE);
+        StageArea addArea = readObject(STAGE_FILE, StageArea.class);
 
         /** 将文件对应关系储存到暂存区 */
         addArea.addBlob(newBlob);
@@ -206,7 +206,7 @@ public class Repository {
      * (do not remove it unless it is tracked in the current commit).
      */
     public static void rm(String fileName) throws IOException {
-        Commit prevCommit = readObject(HEAD, Commit.class);
+        Commit prevCommit = Commit.getCommit(HEAD);
         StageArea stageArea = readObject(STAGE_FILE, StageArea.class);
         //判断这个文件是否被暂存或者被跟踪
         boolean isStage = stageArea.containsBlob(fileName);
@@ -308,9 +308,7 @@ public class Repository {
         //打印删除文件的信息
         message("=== Removed Files ===");
         List<String> rmName = stage.getRmName();
-        if (rmName != null) {
-            printStatus(rmName);
-        }
+        printStatus(rmName);
         //打印任何工作区中与commit或stageArea中不同的情况
         message("=== Modifications Not Staged For Commit ===");
         message("");
@@ -382,9 +380,11 @@ public class Repository {
         }
 
         branchCommit.coverFile();
+        updatePointerTo(HEAD, branchCommit);
         //跟新当前分支
         File curBranchFile = join(curBranch);
         writeContents(curBranchFile, branchName);
+
         StageArea stageArea = readObject(STAGE_FILE, StageArea.class);
         stageArea.clean();
         stageArea.saveStage();
@@ -402,6 +402,8 @@ public class Repository {
         if (newBranch.exists()) {
             message("A branch with that name already exists.");
             return;
+        } else {
+            newBranch.createNewFile();
         }
         Commit headCommit = Commit.getCommit(HEAD);
         updatePointerTo(newBranch, headCommit);
@@ -460,12 +462,16 @@ public class Repository {
 
         // FC2: If other branch does not exist, exit with error message
         File mergeBranch = join(BRANCH_DIR, branchName);
+        //test-----------------------------------
+        System.out.println(branchName);
+        //---------------------------------
         if (!mergeBranch.exists()) {
             message("A branch with that name does not exist.");
             System.exit(0);
         }
         //当前分支
         String curBranchName = readContentsAsString(curBranch);
+        System.out.println(curBranchName);
         // FC3: merge with itself
         if (curBranchName.equals(branchName)) {
             checkoutBranch(branchName);
@@ -475,13 +481,16 @@ public class Repository {
         //HEAD中的commit
         Commit headCommit = Commit.getCommit(HEAD);
         //目标branch最前端的commit
-        Commit branchCommit = Commit.getCommit(branchName);
+
+        File branchFile = join(BRANCH_DIR, branchName);
+        Commit branchCommit = Commit.getCommit(readContentsAsString(branchFile));
 
         // FC4: untracked files
         if (hasUntrackedFile(headCommit, branchCommit)) {
             message("There is an untracked file in the way; delete it, or add and commit it first.");
             System.exit(0);
         }
+
 
         //找寻两个commit的分割点
         Commit splitCommit = Commit.findSplitPoint(headCommit, branchCommit);
@@ -538,7 +547,7 @@ public class Repository {
                 // write content str into file
                 File tmp = join(CWD, blobName);
                 writeContents(tmp, "<<<<<<< HEAD\n" + headContent + "=======\n" + branchContent + ">>>>>>>\n");
-                Blob newBlob = new Blob(branchContent, tmp);
+                Blob newBlob = new Blob(blobName, tmp);
                 newBlob.coverWorkFile();
                 stageArea.addBlob(newBlob);
                 stageArea.saveStage();

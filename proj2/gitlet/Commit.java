@@ -134,7 +134,6 @@ public class Commit implements Serializable {
         }
         File pointPath = join(COMMIT_FOLDER, foundId);
         if (!pointPath.exists()) {
-            //TODO a test
             System.out.println("Commit not found");
             return null;
         }
@@ -208,23 +207,22 @@ public class Commit implements Serializable {
      * 将该commit所有Blob的版本覆盖到工作区
      */
     public void coverFile() throws IOException {
-
-
         Commit curCommit = getCommit(Repository.HEAD);
         Map<String, String> names = new HashMap<>();
         names.putAll(curCommit.getNameToBlob());
         names.putAll(nameToBlob);
         /* There are 2 kinds of situations: */
-        for (String blobId : names.keySet()) {
-            //在branchCommit中存在替换掉
-            if (nameToBlob.containsKey(blobId)) {
+        for (String blobName : names.keySet()) {
+            //在branchCommit中存在同名blob替换掉
+            if (nameToBlob.containsKey(blobName)) {
+                String blobId = nameToBlob.get(blobName);
                 Blob blob = Blob.getBlob(blobId);
                 if (blob != null) {
                     blob.coverWorkFile();
                 }
             } else { //不存在则在工作区中删除
-                File f = join(Repository.CWD, blobId);
-                restrictedDelete(f);
+                File rmFile = join(Repository.CWD, blobName);
+                restrictedDelete(rmFile);
             }
         }
 
@@ -235,19 +233,20 @@ public class Commit implements Serializable {
      * 找到两个commit共同的祖先
      */
     public static Commit findSplitPoint(Commit commit1, Commit commit2) {
-        Set<Commit> ancestors = new HashSet<>();
+        Set<String> ancestors = new HashSet<>();
 
         // 从第一个提交开始向上遍历，记录所有祖先节点
         Commit current = commit1;
         while (current != null) {
-            ancestors.add(current);
+            ancestors.add(current.getId());
             current = current.getParent(0);
         }
 
         // 从第二个提交开始向上遍历，查找第一个出现在祖先集合中的节点
         current = commit2;
         while (current != null) {
-            if (ancestors.contains(current)) {
+            String branchId = current.getId();
+            if (ancestors.contains(branchId)) {
                 return current; // 找到最近公共祖先
             }
             current = current.getParent(0);
