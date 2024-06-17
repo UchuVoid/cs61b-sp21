@@ -134,7 +134,6 @@ public class Commit implements Serializable {
         }
         File pointPath = join(COMMIT_FOLDER, foundId);
         if (!pointPath.exists()) {
-            System.out.println("Commit not found");
             return null;
         }
         return readObject(pointPath, Commit.class);

@@ -180,7 +180,7 @@ public class Main {
                 }
                 break;
             default:
-                message("Incorrect operands");
+                message("No command with that name exists.");
                 System.exit(0);
         }
     }

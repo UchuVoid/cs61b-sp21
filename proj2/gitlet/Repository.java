@@ -147,7 +147,6 @@ public class Repository {
 
         /** 如果相同不存入缓存区 */
         if (newBlob.compareTo(headBlob)) {
-            message("File already exists.");
             return;
         }
 
@@ -286,6 +285,10 @@ public class Repository {
      * Also displays what files have been staged for addition or removal.
      */
     public static void status() {
+        if (!GITLET_DIR.exists()) {
+            message("Not in an initialized Gitlet directory");
+            System.exit(0);
+        }
         //打印分支信息
         message("=== Branches ===");
         List<String> branchName = plainFilenamesIn(BRANCH_DIR);
@@ -308,7 +311,13 @@ public class Repository {
         //打印删除文件的信息
         message("=== Removed Files ===");
         List<String> rmName = stage.getRmName();
-        printStatus(rmName);
+        Commit HeadCommit = Commit.getCommit(HEAD);
+        for (String rm : rmName) {
+            if (HeadCommit.equals(rm)) {
+                printStatus(rmName);
+            }
+        }
+        message("");
         //打印任何工作区中与commit或stageArea中不同的情况
         message("=== Modifications Not Staged For Commit ===");
         message("");
@@ -344,7 +353,7 @@ public class Repository {
     public static void checkoutCommitBlob(String commitId, String commitBlob) throws IOException {
         Commit oldCommit = Commit.getCommit(commitId);
         if (oldCommit == null) {
-            message("there is no commit with that id.");
+            message("No commit with that id exists.");
             return;
         }
         Blob oldBlob = oldCommit.getBlob(commitBlob);
