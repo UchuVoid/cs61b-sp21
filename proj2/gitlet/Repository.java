@@ -182,20 +182,20 @@ public class Repository {
         Commit parentCommit = Commit.getCommit(HEAD);
         List<String> parents = new ArrayList<>();
         parents.add(parentCommit.getId());
-        Commit curCommit = new Commit(msg, parents, parentCommit.getNameToBlob(), new Date()); // receives a copy of parent's map
+        Commit newCommit = new Commit(msg, parents, parentCommit.getNameToBlob(), new Date()); // receives a copy of parent's map
 
-        curCommit.mergeBlob(stageArea);
+        newCommit.mergeBlob(stageArea);
 
-        curCommit.saveCommit();
+        newCommit.saveCommit();
 
         //更新HEAD指向的commit
-        updatePointerTo(HEAD, curCommit);
+        updatePointerTo(HEAD, newCommit);
         //更新目前分支的commit
-        updatePointerTo(join(BRANCH_DIR, readContentsAsString(curBranch)), curCommit);
+        updatePointerTo(join(BRANCH_DIR, readContentsAsString(curBranch)), newCommit);
 
         stageArea.clean();
         stageArea.saveStage();
-        return curCommit;
+        return newCommit;
     }
 
     /**
@@ -491,7 +491,7 @@ public class Repository {
         //目标branch最前端的commit
 
         File branchFile = join(BRANCH_DIR, branchName);
-        Commit branchCommit = Commit.getCommit(readContentsAsString(branchFile));
+        Commit branchCommit = Commit.getCommit(branchFile);
 
         // FC4: untracked files
         if (hasUntrackedFile(headCommit, branchCommit)) {
@@ -570,7 +570,7 @@ public class Repository {
             }
             //Make a merge commit
             String msg = String.format("Merged %s into %s.", branchName, readContentsAsString(curBranch));
-            //If there's anything in the staging areas4
+            //If there's anything in the staging areas
             if (!stageArea.isEmpty()) {
                 Commit mergeCommit = commit(msg);
                 mergeCommit.addParent(branchCommit);
