@@ -313,8 +313,8 @@ public class Repository {
         List<String> rmName = stage.getRmName();
         Commit HeadCommit = Commit.getCommit(HEAD);
         for (String rm : rmName) {
-            if (HeadCommit.equals(rm)) {
-                printStatus(rmName);
+            if (HeadCommit.containsFile(rm)) {
+                message(rm);
             }
         }
         message("");
@@ -370,9 +370,8 @@ public class Repository {
      */
     public static void checkoutBranch(String branchName) throws IOException {
         File branch = join(BRANCH_DIR, branchName);
-        String braCommitId = readContentsAsString(branch);
         //获得该分支内所储存的commit的id
-        Commit branchCommit = Commit.getCommit(braCommitId);
+        Commit branchCommit = Commit.getCommit(branch);
         Commit curCommit = Commit.getCommit(HEAD);
         //错误输入
         if (!branch.exists()) {
