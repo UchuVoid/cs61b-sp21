@@ -370,14 +370,15 @@ public class Repository {
      */
     public static void checkoutBranch(String branchName) throws IOException {
         File branch = join(BRANCH_DIR, branchName);
+        if (!branch.exists()) {
+            message("No such branch exists.");
+            return;
+        }
         //获得该分支内所储存的commit的id
         Commit branchCommit = Commit.getCommit(branch);
         Commit curCommit = Commit.getCommit(HEAD);
         //错误输入
-        if (!branch.exists()) {
-            message("No such branch exists.");
-            return;
-        } else if (readContentsAsString(curBranch).equals(branchName)) {
+ if (readContentsAsString(curBranch).equals(branchName)) {
             // 2. the checked out branch is the current branch
             message("No need to checkout the current branch.");
             System.exit(0);
@@ -470,16 +471,14 @@ public class Repository {
 
         // FC2: If other branch does not exist, exit with error message
         File mergeBranch = join(BRANCH_DIR, branchName);
-        //test-----------------------------------
-        System.out.println(branchName);
-        //---------------------------------
+
         if (!mergeBranch.exists()) {
             message("A branch with that name does not exist.");
             System.exit(0);
         }
         //当前分支
         String curBranchName = readContentsAsString(curBranch);
-        System.out.println(curBranchName);
+
         // FC3: merge with itself
         if (curBranchName.equals(branchName)) {
             checkoutBranch(branchName);
