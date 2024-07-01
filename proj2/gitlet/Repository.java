@@ -577,7 +577,6 @@ public class Repository {
         if (!stageArea.isEmpty()) {
             Commit mergeCommit = commit(msg);
             mergeCommit.addParent(branchCommit);
-
         }
 
         if (conflicted) {
