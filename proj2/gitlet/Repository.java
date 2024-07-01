@@ -378,7 +378,7 @@ public class Repository {
         Commit branchCommit = Commit.getCommit(branch);
         Commit curCommit = Commit.getCommit(HEAD);
         //错误输入
- if (readContentsAsString(curBranch).equals(branchName)) {
+        if (readContentsAsString(curBranch).equals(branchName)) {
             // 2. the checked out branch is the current branch
             message("No need to checkout the current branch.");
             System.exit(0);
@@ -518,7 +518,7 @@ public class Repository {
         allMap.putAll(headMap);
         allMap.putAll(splitMap);
         boolean conflicted = false;
-        //遍历所有blob
+        //遍历所有blob,并判断各种blob的merge后的状态
         for (String blobName : allMap.keySet()) {
             Boolean existSplit = splitMap.containsKey(blobName);
             Boolean existHead = headMap.containsKey(blobName);
@@ -567,19 +567,19 @@ public class Repository {
                 newBlob.coverWorkFile();
                 stageArea.addBlob(newBlob);
             }
-            //Make a merge commit
-            String msg = String.format("Merged %s into %s.", branchName, readContentsAsString(curBranch));
-            //If there's anything in the staging areas
-            if (!stageArea.isEmpty()) {
-                Commit mergeCommit = commit(msg);
-                mergeCommit.addParent(branchCommit);
-            }
+        }
+        //Make a merge commit
+        String msg = String.format("Merged %s into %s.", branchName, readContentsAsString(curBranch));
+        //If there's anything in the staging areas
+        if (!stageArea.isEmpty()) {
+            Commit mergeCommit = commit(msg);
+            mergeCommit.addParent(branchCommit);
 
-            if (conflicted) {
-                System.out.println("Encountered a merge conflict.");
-            }
         }
 
+        if (conflicted) {
+            System.out.println("Encountered a merge conflict.");
+        }
     }
 
     //判断是否含有未追踪文件
