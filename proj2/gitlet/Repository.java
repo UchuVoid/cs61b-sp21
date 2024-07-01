@@ -530,6 +530,7 @@ public class Repository {
             if (existSplit && !existBranch && !headModify) {
                 // g. existSplit && !modifyHead && !existBranch -> remove(blobName) file
                 stageArea.rmBlob(blobName);
+                stageArea.saveStage();
             } else if (existSplit && !existHead && !branchModify) {
                 // h. existSplit && !existHead && !branchModify -> remain removed
                 continue;
@@ -538,6 +539,7 @@ public class Repository {
                 Blob tempBlob = branchCommit.getBlob(blobName);
                 tempBlob.coverWorkFile();
                 stageArea.addBlob(tempBlob);
+                stageArea.saveStage();
             } else if (existSplit && headModify && !branchModify) {
                 // b.existSplit && headModify && !branchModify
                 continue;
@@ -566,6 +568,7 @@ public class Repository {
                 Blob newBlob = branchCommit.getBlob(blobName);
                 newBlob.coverWorkFile();
                 stageArea.addBlob(newBlob);
+                stageArea.saveStage();
             }
         }
         //Make a merge commit
