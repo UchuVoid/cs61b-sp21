@@ -312,12 +312,7 @@ public class Repository {
         message("=== Removed Files ===");
         List<String> rmName = stage.getRmName();
         Commit HeadCommit = Commit.getCommit(HEAD);
-        for (String rm : rmName) {
-            if (HeadCommit.containsFile(rm)) {
-                message(rm);
-            }
-        }
-        message("");
+        printStatus(rmName);
         //打印任何工作区中与commit或stageArea中不同的情况
         message("=== Modifications Not Staged For Commit ===");
         message("");

@@ -66,6 +66,7 @@ public class StageArea implements Serializable {
     //返回add文件的名称
     public List<String> getaddName() {
         List<String> addName = new ArrayList<>();
+        addName.sort(Comparator.naturalOrder());
         for (String name : nameToBlob.keySet()) {
             addName.add(name);
         }
@@ -73,6 +74,7 @@ public class StageArea implements Serializable {
     }
 
     public List<String> getRmName() {
+        rmFile.sort(Comparator.naturalOrder());
         return rmFile;
     }
 
