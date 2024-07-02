@@ -216,17 +216,9 @@ public class Repository {
             return;
         }
 
-
-
+        //判断是从哪里删除，是从刚刚add的文件中删除还是从父辈blob中删除
         stageArea.rmBlob(fileName);
         stageArea.saveStage();
-
-        File rmFile = join(CWD, fileName);
-
-        //删除该文件
-        if (rmFile.exists()) {
-            restrictedDelete(fileName);
-        }
 
     }
 

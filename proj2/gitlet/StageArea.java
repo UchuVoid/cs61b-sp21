@@ -38,13 +38,15 @@ public class StageArea implements Serializable {
     }
 
     /**
-     * 添加要删除的文件
-     * 如果之前缓存了从缓存区删除
+     * 如果未被跟踪只需要从缓存区删除
+     * 如果改文件被跟踪，被rm后需要从系统中删除
      */
     public void rmBlob(String rmName) {
         if (nameToBlob.get(rmName) != null) {
             nameToBlob.remove(rmName);
         } else {
+            File rm = join(Repository.CWD, rmName);
+            restrictedDelete(rm);
             rmFile.add(rmName);
         }
     }
