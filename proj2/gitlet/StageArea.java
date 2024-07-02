@@ -34,7 +34,6 @@ public class StageArea implements Serializable {
         if (nameToBlob.get(addBlob.getFileName()) != null) {
             return;
         }
-
         nameToBlob.put(addBlob.getFileName(), addBlob.getId());
     }
 
@@ -45,8 +44,9 @@ public class StageArea implements Serializable {
     public void rmBlob(String rmName) {
         if (nameToBlob.get(rmName) != null) {
             nameToBlob.remove(rmName);
+        } else {
+            rmFile.add(rmName);
         }
-        rmFile.add(rmName);
     }
 
     /**

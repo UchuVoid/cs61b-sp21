@@ -216,6 +216,8 @@ public class Repository {
             return;
         }
 
+
+
         stageArea.rmBlob(fileName);
         stageArea.saveStage();
 
