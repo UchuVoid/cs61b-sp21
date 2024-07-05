@@ -515,32 +515,33 @@ public class Repository {
         //遍历所有blob,并判断各种blob的merge后的状态
         for (String blobName : allMap.keySet()) {
             Boolean existSplit = splitMap.containsKey(blobName);
-            Boolean existHead = headMap.containsKey(blobName);
+            Boolean existCur = headMap.containsKey(blobName);
             Boolean existBranch = branchMap.containsKey(blobName);
             Boolean branchModify = modified(blobName, splitMap, branchMap);
-            Boolean headModify = modified(blobName, headMap, branchMap);
+            Boolean curModify = modified(blobName, splitMap, headMap);
 
-            // a. existSplit && branchModify && !headModify -> update branchModify
-            if (existSplit && !existBranch && !headModify) {
+            // a. existSplit && branchModify && !curModify -> update branchModify
+            if (existSplit && !existBranch && !curModify) {
                 // g. existSplit && !modifyHead && !existBranch -> remove(blobName) file
-                stageArea.rmBlob(blobName);
+                stageArea.rmTrackBlob(blobName);
                 stageArea.saveStage();
-            } else if (existSplit && !existHead && !branchModify) {
-                // h. existSplit && !existHead && !branchModify -> remain removed
+            } else if (existSplit && !existCur && !branchModify) {
+                // h. existSplit && !existCur && !branchModify -> remain removed
+                // 被主动删除的文件保持删除
                 continue;
-            } else if (existSplit && existHead && !branchModify) {
-                // a. existSplit && branchModify && !headModify -> update branchModify
+            } else if (existSplit && branchModify && !curModify) {
+                // a. existSplit && branchModify && !curModify -> update branchModify
                 Blob tempBlob = branchCommit.getBlob(blobName);
                 tempBlob.coverWorkFile();
                 stageArea.addBlob(tempBlob);
                 stageArea.saveStage();
-            } else if (existSplit && headModify && !branchModify) {
-                // b.existSplit && headModify && !branchModify
+            } else if (existSplit && curModify && !branchModify) {
+                // b.existSplit && curModify && !branchModify
                 continue;
-            } else if (existSplit && headModify && branchModify) {
-                // c.existSplit && headModify && branchModify (same modify)
-                // d.existSplit && headModify && branchModify(diff modify)
-                if (existBranch && existHead) {
+            } else if (existSplit && curModify && branchModify) {
+                // c.existSplit && curModify && branchModify (same modify)
+                // d.existSplit && curModify && branchModify(diff modify)
+                if (existBranch && existCur) {
                     conflicted = true;
                 }
                 Blob headBlob = headCommit.getBlob(blobName);
@@ -554,10 +555,10 @@ public class Repository {
                 newBlob.coverWorkFile();
                 stageArea.addBlob(newBlob);
                 stageArea.saveStage();
-            } else if (!existSplit && !branchModify && headModify) {
+            } else if (!existSplit && !branchModify && curModify) {
                 // e. not in SPLIT && not otherHead && mod in curHead -> keep to curHead
                 continue;
-            } else if (!existSplit && !headModify && branchModify) {
+            } else if (!existSplit && !curModify && branchModify) {
                 // f. not in SPLIT && not curHead && mod in otherHead -> update to otherHead
                 Blob newBlob = branchCommit.getBlob(blobName);
                 newBlob.coverWorkFile();
