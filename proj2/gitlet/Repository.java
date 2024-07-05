@@ -138,22 +138,23 @@ public class Repository {
         }
 
         Blob newBlob = new Blob(fileName, path);
-
+        //直接保存没问题，因为会覆盖
+        newBlob.saveBlob();
         /** 判断add文件相较前一次commit是否被修改 */
         Commit headCommit = Commit.getCommit(HEAD);
 
         /** 前一次提交时的该文件 */
         Blob headBlob = headCommit.getBlob(fileName);
 
-        /** 如果相同不存入缓存区 */
-        if (newBlob.compareTo(headBlob)) {
-            return;
-        }
-
-        newBlob.saveBlob();
-
         /** 初始化暂存区 */
         StageArea addArea = readObject(STAGE_FILE, StageArea.class);
+
+        /** 如果存入的文件与之前跟踪的文件内容相同且暂存区中rm了该文件除去暂存区中的rm */
+        if (newBlob != null && newBlob.compareTo(headBlob)) {
+            addArea.getRmFile().remove(fileName);
+            addArea.saveStage();
+            return;
+        }
 
         /** 将文件对应关系储存到暂存区 */
         addArea.addBlob(newBlob);
@@ -217,7 +218,11 @@ public class Repository {
         }
 
         //判断是从哪里删除，是从刚刚add的文件中删除还是从父辈blob中删除
-        stageArea.rmBlob(fileName);
+        if (isStage) {
+            stageArea.rmBlob(fileName);
+        } else if (isTracked) {
+            stageArea.rmTrackBlob(fileName);
+        }
         stageArea.saveStage();
 
     }
