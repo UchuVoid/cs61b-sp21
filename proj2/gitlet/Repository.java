@@ -541,7 +541,7 @@ public class Repository {
             } else if (existSplit && curModify && branchModify) {
                 // c.existSplit && curModify && branchModify (same modify)
                 // d.existSplit && curModify && branchModify(diff modify)
-                if (existBranch && existCur) {
+                if (judgeConflict(headCommit, branchCommit, blobName)) {
                     conflicted = true;
                 }
                 Blob headBlob = headCommit.getBlob(blobName);
@@ -577,6 +577,20 @@ public class Repository {
         if (conflicted) {
             System.out.println("Encountered a merge conflict.");
         }
+    }
+
+
+    public static boolean judgeConflict(Commit headCommit, Commit branchCommit, String blobName) {
+        if (headCommit.getBlob(blobName) != null
+                && branchCommit.getBlob(blobName) != null
+                && (!headCommit.getBlob(blobName).compareTo(branchCommit.getBlob(blobName)))) {
+            return true;
+        } else if (headCommit.getBlob(blobName) != null && branchCommit.getBlob(blobName) == null) {
+            return true;
+        } else if (headCommit.getBlob(blobName) == null && branchCommit.getBlob(blobName) == null) {
+            return true;
+        }
+        return false;
     }
 
     //判断是否含有未追踪文件
