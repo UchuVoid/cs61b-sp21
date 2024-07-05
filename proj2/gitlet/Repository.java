@@ -426,7 +426,7 @@ public class Repository {
             message("Cannot remove the current branch.");
             return;
         }
-        restrictedDelete(rmBranch);
+        rmBranch.delete();
     }
 
     /**
