@@ -374,7 +374,7 @@ public class Repository {
         //错误输入
         if (readContentsAsString(curBranch).equals(branchName)) {
             // 2. the checked out branch is the current branch
-            message("No need to checkout the current branch.");
+            message("Cannot merge a branch with itself.");
             System.exit(0);
         } else if (hasUntrackedFile(curCommit, branchCommit)) {
             // 3. if a working file is untracked in the current branch and would be overwritten by the checkout
@@ -457,7 +457,7 @@ public class Repository {
 
         /* Failure checks */
         // FC1: uncommitted changes
-        StageArea stageArea = new StageArea(STAGE_FILE);
+        StageArea stageArea= readObject(STAGE_FILE, StageArea.class);
         if (!stageArea.isEmpty()) {
             message("You have uncommitted changes.");
             return;
