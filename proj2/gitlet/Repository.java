@@ -374,7 +374,7 @@ public class Repository {
         //错误输入
         if (readContentsAsString(curBranch).equals(branchName)) {
             // 2. the checked out branch is the current branch
-            message("Cannot merge a branch with itself.");
+            message("No need to checkout the current branch.");
             System.exit(0);
         } else if (hasUntrackedFile(curCommit, branchCommit)) {
             // 3. if a working file is untracked in the current branch and would be overwritten by the checkout
