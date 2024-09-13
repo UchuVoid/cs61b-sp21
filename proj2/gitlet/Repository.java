@@ -457,7 +457,7 @@ public class Repository {
 
         /* Failure checks */
         // FC1: uncommitted changes
-        StageArea stageArea= readObject(STAGE_FILE, StageArea.class);
+        StageArea stageArea = readObject(STAGE_FILE, StageArea.class);
         if (!stageArea.isEmpty()) {
             message("You have uncommitted changes.");
             return;
@@ -472,12 +472,11 @@ public class Repository {
         }
         //当前分支
         String curBranchName = readContentsAsString(curBranch);
-
+//        System.out.println("curBranchName=" + curBranchName + ", branchName=" + branchName);
         // FC3: merge with itself
         if (curBranchName.equals(branchName)) {
-            checkoutBranch(branchName);
-            message("Current branch fast-forwarded.");
-            return;
+            message("Cannot merge a branch with itself.");
+            System.exit(0);
         }
         //HEAD中的commit
         Commit headCommit = Commit.getCommit(HEAD);
