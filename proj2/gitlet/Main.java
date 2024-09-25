@@ -167,6 +167,13 @@ public class Main {
                     System.exit(0);
                 }
                 String resetMsg = args[1];
+
+                try {
+                    reset(resetMsg);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
                 break;
             case "merge":
                 if (args.length != 2) {
