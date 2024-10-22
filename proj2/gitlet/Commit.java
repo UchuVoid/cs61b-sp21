@@ -64,7 +64,7 @@ public class Commit implements Serializable {
         }
         /** 在commit文件夹中创建一个以SHA_1值为名的文件
          * 内含commit */
-        File commitFile = new File(COMMIT_FOLDER, this.id);
+        File commitFile = join(COMMIT_FOLDER, this.id);
 
         try {
             commitFile.createNewFile();
@@ -119,24 +119,24 @@ public class Commit implements Serializable {
      * 用于从分支中提取commit
      */
     public static Commit getCommit(String id) {
-        int n = id.length();
-        String foundId = id;
-        //简短型id的长度
-        int cutId = 6;
-        //搜索简短型的id
-        if (n == cutId) {
-            // Search id in file (might be abbreviated id)
-            for (String name : Objects.requireNonNull(plainFilenamesIn(COMMIT_FOLDER))) {
-                if (name.substring(0, n).equals(id)) {
-                    foundId = name;
-                }
-            }
-        }
-        File pointPath = join(COMMIT_FOLDER, foundId);
-        if (!pointPath.exists()) {
+        if (id == null || id.equals("")) {
             return null;
         }
-        return readObject(pointPath, Commit.class);
+        // Search id in file (might be abbreviated id)
+        int n = id.length();
+        String foundId = id;
+        for (String name : Objects.requireNonNull(plainFilenamesIn(COMMIT_FOLDER))) {
+            if (name.substring(0, n).equals(id)) {
+                foundId = name;
+            }
+        }
+        // Get the absolute file path from its sha-1 hash
+        File filePath = join(COMMIT_FOLDER, foundId);
+        if (!filePath.exists()) {
+            return null;
+        }
+        // Return the Commit obj if it exists
+        return readObject(filePath, Commit.class);
     }
 
     /**
