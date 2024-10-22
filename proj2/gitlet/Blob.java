@@ -6,114 +6,107 @@ import java.io.Serializable;
 
 import static gitlet.Utils.*;
 
-
-/**
- * Blob是文件在add时的快照
- * 储存了文件的一个暂时的版本
+/** Represents a gitlet Blob object.
+ *  A blob is a snapshot of a file's content at the moment of addition.
  *
- * @author UchuVoid
+ *  @author flora
  */
 public class Blob implements Serializable {
-    public static final File blobs = join(Repository.GITLET_DIR, "Blobs");
-    private final String fileName;
-    private final String fileContent;
+    /** The blob directory, a subdirectory of .gitlet. */
+    public static final File BLOB_FOLDER = join(Repository.GITLET_DIR, "blobs");
+
+
+    /* Instance variables */
+
+    /** Name of the Blob (SHA-1 hashed) */
     private final String id;
+    /** The plain String of the original file's content */
+    private final String plainContent;
+    private final String plainName;
 
     /**
-     * 创建一个储存文件各种版本的文件夹，
-     * 在这个文件夹中储存这以文件SHA-1值
-     * 为文件名的各种文件
-     *
-     * @param fileName 被add的文件的名字
-     * @param addFile  被add的文件
+     *  Constructor.
+     *  Given a filepath, reads in the File and converts it into a Blob.
+     *  Does NOT save it here.
+     * @param filePath The absolute path of the file.
+     * @param plainName Plain name of the file (e.g. hello.txt)
      */
-    public Blob(String fileName, File addFile) {
-        if (!blobs.exists()) {
-            blobs.mkdirs();
+    public Blob(File filePath, String plainName) {
+        if (!BLOB_FOLDER.exists()) {
+            BLOB_FOLDER.mkdir();
         }
-        this.fileName = fileName;
-        //将该文件内含的字符串储存
-        this.fileContent = readContentsAsString(addFile);
-        id = sha1(this.fileName + this.fileContent);
+        this.plainContent = readContentsAsString(filePath);
+        this.plainName = plainName;
+        this.id = sha1(plainName + plainContent); // MUST: hash in its name
     }
 
-    /**
-     * 将blob保存到Blobs文件夹中
-     */
     public void saveBlob() {
-        File blobFile = join(blobs, this.id);
+        if (!BLOB_FOLDER.exists()) {
+            BLOB_FOLDER.mkdir();
+        }
+        // Create a new File for this Blob
+        File blobFile = join(BLOB_FOLDER, this.getId()); // the name of the commit is its sha1 hash
         try {
             blobFile.createNewFile();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        // Serialize the Blob and save it to BLOB_FOLDER
         writeObject(blobFile, this);
     }
 
-    /**
-     * 根据SHA_1值
-     * 判断两个Blob是否相同
-     */
-    public boolean compareTo(String otherId) {
-        if (otherId.equals(this.id)) {
-            return true;
+    /** Converts a blob back into a file, and write to the given new file path */
+    public void writeContentToFile(File newFilepath) {
+        if (!newFilepath.exists()) {
+            try {
+                newFilepath.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-        return false;
+        // Reads the blob's plainContent into the new File
+        writeContents(newFilepath, this.getPlainContent()); // overwrite
     }
 
-    /**
-     * 输入另一个blob
-     * 判断两个Blob是否相同
-     */
-    public boolean compareTo(Blob otherBlob) {
-        if (otherBlob == null) {
-            return false;
-        }
-        String otherId = otherBlob.getId();
-        return this.compareTo(otherId);
+    /** Returns true if two Commits object refer to the same commit */
+    public boolean compareTo(Blob anotherBlob) {
+        return anotherBlob.getId().contentEquals(this.id);
     }
 
 
-    /**
-     * 根据BlobId返回blobs文件夹中指定blob
+
+    /** Gets the Commit object corresponding to the given sha-1 filename
+     *  @param id filename as sha-1 hash referring to a Commit object
      */
-    public static Blob getBlob(String blobId) {
-        File blobFile = join(blobs, blobId);
-        if (!blobFile.exists()) {
+    public static Blob getBlobFromId(String id) {
+        if (id == null || id.equals("")) {
             return null;
         }
-        return readObject(blobFile, Blob.class);
-    }
-
-    //将该文件覆盖到工作区
-    public void coverWorkFile() throws IOException {
-        File workBlob = join(Repository.CWD, this.fileName);
-        //如果存在同名文件覆盖掉
-        if (workBlob.exists()) {
-            Utils.restrictedDelete(this.fileName);
+        // Get the absolute file path from its sha-1 hash
+        File filePath = join(BLOB_FOLDER, id);
+        if (!filePath.exists()) {
+            return null;
         }
-        workBlob.createNewFile();
-        writeContents(workBlob, this.fileContent);
+        // Return the Blob obj if it exists
+        return readObject(filePath, Blob.class);
     }
 
-    //判断改blob是否修改
-    @Override
-    public boolean equals(Object obj) {
-        Blob other = (Blob) obj;
-        return this.fileContent.equals(other.getFileContent());
-    }
 
-    public String getFileName() {
-        return fileName;
-    }
 
-    public String getFileContent() {
-        return fileContent;
-    }
 
+    /* Data getters */
+
+    /** Returns the sha-1 hash (id) of the Blob object. */
     public String getId() {
-        return id;
+        return id; // same as hash
     }
 
+    public String getPlainName() {
+        return plainName; // same as hash
+    }
+
+    public String getPlainContent() {
+        return plainContent;
+    }
 
 }

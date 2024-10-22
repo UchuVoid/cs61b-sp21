@@ -65,6 +65,41 @@ class Utils {
 
     /* FILE DELETION */
 
+    /** Cleans .gitlet repo and all .txt files in CWD */
+    public static void cleanRepo(File CWD) {
+        // 删除 .gitlet 目录及其下所有文件
+        File gitletDir = join(CWD, ".gitlet");
+        deleteDirectory(gitletDir);
+
+        // 删除 CWD 下所有后缀名为 .txt 的文件
+        File[] txtFiles = CWD.listFiles((dir, name) -> name.endsWith(".txt"));
+        if (txtFiles != null) {
+            for (File txtFile : txtFiles) {
+                deleteFile(txtFile);
+            }
+        }
+    }
+
+    /** Helper: delete directory and all its contents */
+    private static void deleteDirectory(File dir) {
+        if (dir.isDirectory()) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    deleteDirectory(file);
+                }
+            }
+        }
+        deleteFile(dir);
+    }
+
+    /** Helper: delete file */
+    private static void deleteFile(File file) {
+        if (!file.delete()) {
+            throw new RuntimeException("Failed to delete file: " + file);
+        }
+    }
+
     /** Deletes FILE if it exists and is not a directory.  Returns true
      *  if FILE was deleted, and false otherwise.  Refuses to delete FILE
      *  and throws IllegalArgumentException unless the directory designated by
@@ -84,8 +119,6 @@ class Utils {
      *  Returns true if FILE was deleted, and false otherwise.  Refuses
      *  to delete FILE and throws IllegalArgumentException unless the
      *  directory designated by FILE also contains a directory named .gitlet. */
-
-
     static boolean restrictedDelete(String file) {
         return restrictedDelete(new File(file));
     }
@@ -143,8 +176,7 @@ class Utils {
     static <T extends Serializable> T readObject(File file,
                                                  Class<T> expectedClass) {
         try {
-            ObjectInputStream in =
-                new ObjectInputStream(new FileInputStream(file));
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
             T result = expectedClass.cast(in.readObject());
             in.close();
             return result;
@@ -193,14 +225,14 @@ class Utils {
     /* OTHER FILE UTILITIES */
 
     /** Return the concatentation of FIRST and OTHERS into a File designator,
-     *  analogous to the {@link /java.nio.file.Paths.#get(String, String[])}
+     *  analogous to the {@link java.nio.file.Paths.#"get(String, String[])}
      *  method. */
     static File join(String first, String... others) {
         return Paths.get(first, others).toFile();
     }
 
     /** Return the concatentation of FIRST and OTHERS into a File designator,
-     *  analogous to the {@link /java.nio.file.Paths.#get(String, String[])}
+     *  analogous to the {@link java.nio.file.Paths.#get(String, String[])}
      *  method. */
     static File join(File first, String... others) {
         return Paths.get(first.getPath(), others).toFile();

@@ -1,124 +1,78 @@
 package gitlet;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static gitlet.Utils.*;
-import static gitlet.Utils.readObject;
 
-/**
- * Represents a gitlet commit object.
- * <p>
- * A commit consists of a log message, timestamp,
- * a mapping of file names to blob references, a parent reference,
- * and (for merges) a second parent reference.
+/** Represents a gitlet commit object.
+ *  A commit consists of a log message, timestamp,
+ *  a mapping of file names to blob references, a parent reference,
+ *  and (for merges) a second parent reference.
  *
- * @author UchuVoid
+ *  @author flora
  */
 public class Commit implements Serializable {
-    public final static File COMMIT_FOLDER = join(Repository.GITLET_DIR, "commit");
 
-    /**
-     * The message of this Commit.
-     */
-    private String message;
-    /* The timestamp of current time*/
-    private Date timestamp;
-    /**
-     * Mapping of `filenames` to corresponding `Blob` objects.
-     * Example of mapping: {"hello.txt": "someSHA-1Hash"}
-     */
+    /** The commit directory, a subdirectory of .gitlet. */
+    public static final File COMMIT_FOLDER = join(Repository.GITLET_DIR, "commits");
+
+    /** The message of this Commit. */
+    private final String message;
+    /** The timestamp of current Commit. */
+    private final Date timestamp;
+
+    /** Mapping of `filenames` to corresponding `Blob` objects.
+     *  Example of mapping: {"hello.txt": "someSHA-1Hash"} */
     private TreeMap<String, String> nameToBlob; //
-    /**
-     * Parent of the current Commit: a sha-1 hash.
-     */
+    /** Parent of the current Commit: a sha-1 hash. */
     private final List<String> parents;
     private final String id;
 
     /**
      * Constructor.
-     *
-     * @param msg       Commit message.
-     * @param parents   Parent of the Commit instance.
+     * @param msg Commit message.
+     * @param parents Parent of the Commit instance.
      * @param timestamp Timestamp of the Commit instance.
      */
     public Commit(String msg, List<String> parents, TreeMap<String, String> nameToBlob, Date... timestamp) {
+        // metadata
         this.message = msg;
         this.timestamp = timestamp[0];
+        // references
         this.parents = parents;
         this.nameToBlob = nameToBlob;
-        id = Utils.sha1(this.message + this.timestamp.toString() + this.parents
+        this.id = sha1(this.message + this.timestamp.toString() + this.parents
                 + this.nameToBlob.toString());
     }
 
-    /**
-     * save the commit to the COMMIT_FOLDER
-     */
+
+
+    /* Commit Functions */
+
+    /** Save the Commit object to COMMIT_FOLDER*/
     public void saveCommit() {
         if (!COMMIT_FOLDER.exists()) {
             COMMIT_FOLDER.mkdir();
         }
-        /** 在commit文件夹中创建一个以SHA_1值为名的文件
-         * 内含commit */
-        File commitFile = join(COMMIT_FOLDER, this.id);
-
+        // Create a new File for this Commit
+        File commitFile = join(COMMIT_FOLDER, this.getId()); // the name of the commit is its sha1 hash
         try {
             commitFile.createNewFile();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         // Serialize the Commit and save it to COMMIT_FOLDER
         writeObject(commitFile, this);
     }
 
-
-    /**
-     * Adds a parent to the current parent list.
-     * Used for merging commits.
+    /** Gets the Commit object corresponding to the given sha-1 filename
+     *  @param id filename as sha-1 hash referring to a Commit object
+     *            Allow abbreviated id.
      */
-    public void addParent(Commit parent) {
-        this.parents.add(parent.getId());
-        this.saveCommit();// update commit file
-    }
-
-    /**
-     * 返回该commit中指定文件名的SHA_1值
-     */
-    public String getBlobId(String fileName) {
-        return nameToBlob.get(fileName);
-    }
-
-    /**
-     * 根据文件路径
-     * 返回指定分支所指的commit
-     * 用于从分支中提取commit
-     */
-    public static Commit getCommit(File p) {
-
-        /** 返回p指向的commit的hash值 */
-        String hashInPoint = readContentsAsString(p);
-
-        File pointPath = join(COMMIT_FOLDER, hashInPoint);
-
-        if (!pointPath.exists()) {
-            return null;
-        }
-
-        // Return the Commit obj if it exists
-        return readObject(pointPath, Commit.class);
-    }
-
-    /**
-     * 根据commit的id
-     * 返回COMMIT_DIR中指定的commit
-     * 用于从分支中提取commit
-     */
-    public static Commit getCommit(String id) {
+    public static Commit getCommitFromId(String id) {
         if (id == null || id.equals("")) {
             return null;
         }
@@ -139,147 +93,108 @@ public class Commit implements Serializable {
         return readObject(filePath, Commit.class);
     }
 
-    /**
-     * 根据parent的id
-     * 返回指定的parent Commit
-     */
-    public Commit getParent(int index) {
-        if (parents == null || parents.size() == 0) {
-            return null;
-        }
-        String parentId = parents.get(index);
-        File parentFile = join(COMMIT_FOLDER, parentId);
-        if (!parentFile.exists()) {
-            return null;
-        }
-        return readObject(parentFile, Commit.class);
-    }
-
-
-    /**
-     * Update current Commit according to staged addition and removal.
-     */
-    public void mergeBlob(StageArea stageArea) {
-        TreeMap<String, String> addBlob = stageArea.getNameToBlob();
-        List<String> rmBlob = stageArea.getRmFile();
-
-        for (String addFile : addBlob.keySet()) {
-            nameToBlob.put(addFile, addBlob.get(addFile));
-        }
-
-        for (String rmFile : rmBlob) {
-            nameToBlob.remove(rmFile);
-        }
-    }
-
-    /**
-     * 根据指定文件名返回Blob
-     */
-    public Blob getBlob(String fileName) {
-        String blobId = getBlobId(fileName);
-        if (blobId == null) {
-            return null;
-        }
-        return Blob.getBlob(blobId);
-    }
-
-    /**
-     * 打印commit的log信息
-     */
-    public void printCommitInfo() {
-        SimpleDateFormat format = new SimpleDateFormat("E MMM dd HH:mm:ss yyyy Z");
-        message("===");
-        message("commit %s", id);
-        if (parents != null && parents.size() == 2) {
-            Commit parent1 = getParent(0);
-            Commit parent2 = getParent(1);
-            System.out.printf(
-                    "Merge: %s %s\n",
-                    parent1.getId().substring(0, 7),
-                    parent2.getId().substring(0, 7));
-        }
-        message("Date: " + format.format(timestamp));
-        message(this.message + "\n");
-    }
-
-    /**
-     * 将该commit所有Blob的版本覆盖到工作区
-     */
-    public void coverFile() throws IOException {
-        Commit curCommit = getCommit(Repository.HEAD);
-        Map<String, String> names = new HashMap<>();
-        names.putAll(curCommit.getNameToBlob());
-        names.putAll(nameToBlob);
-        /* There are 2 kinds of situations: */
-        for (String blobName : names.keySet()) {
-            //在branchCommit中存在同名blob替换掉
-            if (nameToBlob.containsKey(blobName)) {
-                String blobId = nameToBlob.get(blobName);
-                Blob blob = Blob.getBlob(blobId);
-                if (blob != null) {
-                    blob.coverWorkFile();
-                }
-            } else { //不存在则在工作区中删除
-                File rmFile = join(Repository.CWD, blobName);
-                restrictedDelete(rmFile);
+    /** Update current Commit according to staged addition or removal.
+     * @param area can only be Add || Rm */
+    public void updateCommitMapTo(StagingArea area) {
+        if (area.areaName.equals("Add") || area.areaName.equals("add")) { // if this is the add
+            for (String plainName : area.nameSet()) {
+                // For all staged files, update/insert mappings
+                this.put(plainName, area.get(plainName)); // this == curCommit, update/add new entry
+            }
+        } else {
+            // stageRemoval
+            for (String plainName : area.nameSet()) {
+                this.remove(plainName); // rm
             }
         }
-
-
     }
 
-    /**
-     * 找到两个commit共同的祖先
+    /* Commit Map operations */
+    /** Insert a key-value set into the nameToBlob map of the commit */
+    private void put(String plainName, Blob blob) {
+        String id = blob.getId();
+        nameToBlob.put(plainName, id); // what's ACTUALLY put into the map is the ID
+        File filepath = join(COMMIT_FOLDER, this.id);
+        writeObject(filepath, this);
+    }
+    /** remove a key-val set from the map
+     * @return Blob of the id corresponding to the given key
      */
-    public static Commit findSplitPoint(Commit commit1, Commit commit2) {
-        Set<String> ancestors = new HashSet<>();
-
-        // 从第一个提交开始向上遍历，记录所有祖先节点
-        Commit current = commit1;
-        while (current != null) {
-            ancestors.add(current.getId());
-            current = current.getParent(0);
-        }
-
-        // 从第二个提交开始向上遍历，查找第一个出现在祖先集合中的节点
-        current = commit2;
-        while (current != null) {
-            String branchId = current.getId();
-            if (ancestors.contains(branchId)) {
-                return current; // 找到最近公共祖先
-            }
-            current = current.getParent(0);
-        }
-
-        return null; // 如果没有找到公共祖先，则返回null
+    public Blob remove(String plainName) {
+        String blobId = nameToBlob.remove(plainName);
+        File filepath = join(COMMIT_FOLDER, this.id);
+        writeObject(filepath, this); // overwrite the original file as an update
+        return Blob.getBlobFromId(blobId);
     }
 
-    public String getParentId(int index) {
-        return parents.get(index);
+    /** Adds a parent to the current parent list.
+     *  Used for merging commits. */
+    public void addParent(Commit parent) {
+        this.parents.add(parent.getId());
+        this.saveCommit();// update commit file
     }
 
-    public boolean containsBlob(String fileName) {
-        return nameToBlob.containsKey(fileName);
+    /** Given a plainName, return the corresponding blob id in commit map
+     *  NOTE: this is a map-like operation */
+    public Blob get(String plainName) {
+        // If the blob does not exist, return an empty string.
+        String id = nameToBlob.getOrDefault(plainName, null);
+        return Blob.getBlobFromId(id);
     }
 
-    public TreeMap<String, String> getNameToBlob() {
-        return nameToBlob;
+    /** Given a filename, returns if a key with the PLAINNAME exists in the commit map. */
+    public boolean containsFile(String plainName) {
+        return nameToBlob.containsKey(plainName);
     }
 
-    public String getId() {
-        return id;
+    /** Returns a set of filenames in the current commit */
+    public Set<String> nameSet() {
+        return nameToBlob.keySet();
     }
 
-    public String getTimestamp() {
-        return timestamp.toString();
+    /** Returns true if two Commits object refer to the same commit */
+    public boolean compareTo(Commit anotherCommit) {
+        return anotherCommit.getId().contentEquals(this.id);
     }
 
+    /* Data getters */
+
+    /** Returns the message of the Commit. */
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
-    //判断是否改commit版本中是否含有该文件
-    public boolean containsFile(String fileName) {
-        return nameToBlob.containsKey(fileName);
+    /** Returns the sha-1 hash of the Commit's parent Commit. */
+    public List<Commit> getParent() {
+        if (parents == null) {
+            return null;
+        }
+        List<Commit> res = new ArrayList<>();
+        for (String pId : parents) {
+            res.add(getCommitFromId(pId));
+        }
+        return res;
     }
+
+    /** Returns the sha-1 hash of the Commit object. */
+    public String getId() {
+        return this.id;
+    }
+    /** Returns the String data of the Commit object. */
+    public String getData() {
+        return this.message + "\n" + this.timestamp.toString() + "\n" + this.parents.toString()
+                + "\n" + this.nameToBlob.toString();
+    }
+
+    public Date getTimestamp() {
+        return this.timestamp;
+    }
+
+    /** Returns a COPY of the plainName to blob hashmap of current commit.
+     * Example of mapping: {"hello.txt": "someSHA-1Hash"} */
+    public TreeMap<String, String> getMap() {
+        // !: COPY
+        return new TreeMap<>(this.nameToBlob);
+    }
+
 }
